@@ -23,25 +23,41 @@ def summarize_chunk(client, prompt, chunk):
 
 # --- ADD THIS TO summariza all chucnks ---    
 def summarize_all_chunks(client, prompt, raw_text_stream):
+    # Stage 1 — summarize raw chunks
     chunks = chunk_text(raw_text_stream)
+    partial_summaries = [summarize_chunk(client, prompt, c) for c in chunks]
 
-    partial_summaries = []
-    for chunk in chunks:
-        partial_summaries.append(summarize_chunk(client, prompt, chunk))
-
+    # Combine partial summaries
     combined_text = "\n".join(partial_summaries)
+
+    # Stage 2 — chunk the combined summary to avoid 413 errors
+    final_chunks = chunk_text(combined_text, max_chars=4000)
+    refined_summaries = []
+
+    for fc in final_chunks:
+        refined = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": "Refine this partial summary into structured JSON."},
+                {"role": "user", "content": fc}
+            ],
+            response_format={"type": "json_object"}
+        )
+        refined_summaries.append(refined.choices[0].message.content)
+
+    # Stage 3 — final merge (small enough now)
+    final_merge = "\n".join(refined_summaries)
 
     final_response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[
-            {"role": "system", "content": "Combine and refine these summaries into a single structured JSON output."},
-            {"role": "user", "content": combined_text}
+            {"role": "system", "content": "Merge these JSON fragments into one clean JSON object."},
+            {"role": "user", "content": final_merge}
         ],
         response_format={"type": "json_object"}
     )
 
     return final_response.choices[0].message.content
-
     
 # Load configurations
 with open("config.json", "r") as f:

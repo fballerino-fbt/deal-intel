@@ -23,7 +23,7 @@ jobs:
 
     - name: Install Ingestion Frameworks
       run: |
-        pip install crawl4ai openai
+        pip install -r requirements.txt
  
 
     - name: Step 1 - Execute Ingestion and Dashboard Generation

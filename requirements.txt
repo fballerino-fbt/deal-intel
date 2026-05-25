@@ -8,3 +8,4 @@ numpy
 datetime
 crawl4ai
 openai
+groq

@@ -130,12 +130,13 @@ def validate_json_text(s: str) -> Tuple[bool, Optional[str]]:
 # ---------------------------
 
 
-async def _extract_text_from_response(resp: Any) -> str:
+def _extract_text_from_response_sync(resp: Any) -> str:
     """
-    Generic extractor for model responses. Assumes Groq-like response:
+    Synchronous extractor for model responses. Handles Groq-like response shapes:
     resp.choices[0].message['content'] or resp.choices[0]['text'] or resp.choices[0].text
     """
     try:
+        # Some SDKs return nested message content
         return resp.choices[0].message["content"]
     except Exception:
         if hasattr(resp, "choices") and len(resp.choices) > 0:
@@ -144,7 +145,8 @@ async def _extract_text_from_response(resp: Any) -> str:
                 return c["text"]
             if hasattr(c, "text"):
                 return c.text
-    raise RuntimeError("Unable to extract text from model response")
+    raise RuntimeError("Unable to extract text from model response (sync)")
+
 
 
 async def summarize_chunk_as_json(
@@ -154,7 +156,8 @@ async def summarize_chunk_as_json(
     max_tokens: int = DEFAULT_MAX_TOKENS_PER_CHUNK,
 ) -> str:
     prompt = STRICT_JSON_PROMPT + "\n\nInput text:\n" + chunk_text
-    resp = await client.chat.completions.create(
+    # Call the SDK synchronously (some SDKs return a non-awaitable object)
+    resp = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.0,
@@ -163,7 +166,8 @@ async def summarize_chunk_as_json(
         frequency_penalty=0.0,
         presence_penalty=0.0,
     )
-    return await _extract_text_from_response(resp)
+    # Extract synchronously
+    return _extract_text_from_response_sync(resp)
 
 
 async def fix_json_with_model(client: Any, model: str, raw_output: str) -> str:
@@ -174,14 +178,15 @@ async def fix_json_with_model(client: Any, model: str, raw_output: str) -> str:
         + STRICT_JSON_PROMPT
         + "\nReturn only the JSON, nothing else."
     )
-    resp = await client.chat.completions.create(
+    resp = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": fix_prompt}],
         temperature=0.0,
         max_tokens=2000,
         top_p=1.0,
     )
-    return await _extract_text_from_response(resp)
+    return _extract_text_from_response_sync(resp)
+
 
 
 # ---------------------------
@@ -290,14 +295,15 @@ async def summarize_text_to_deals(
         + combined_json_text
         + "\n\nReturn only the final validated JSON object that matches the schema."
     )
-    resp = await client.chat.completions.create(
+    resp = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": final_prompt}],
         temperature=0.0,
         max_tokens=2000,
         top_p=1.0,
     )
-    final_text = await _extract_text_from_response(resp)
+    final_text = _extract_text_from_response_sync(resp)
+    
     ok_final, err_final = validate_json_text(final_text)
 
     if ok_final:

@@ -44,28 +44,8 @@ MODEL_ID = "llama-3.1-8b-instant"
 # ---------------------------
 # User's Edge browser tabs metadata (kept for context)
 # ---------------------------
-edge_all_open_tabs = [
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>deal-intel/cell_deal_intel.py at main \u00B7 fballerino-fbt/deal-intel</WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>https://github.com/fballerino-fbt/deal-intel/blob/main/cell_deal_intel.py</WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>","tabId":1917283405,"isCurrent":True},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>CPALMS | Search Standards</WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>https://www.cpalms.org/standards/FLStandardSearch.aspx</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283419,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>FETA - NotebookLM</WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>https://notebooklm.google.com/notebook/12692cfa-323a-4522-b1ee-c01813e568f6</WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>","tabId":1917283425,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDzG>Dashboard | Claude Platform</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://platform.claude.com/dashboard</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283410,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Home \\ Anthropic</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://www.anthropic.com</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283413,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Claude</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://claude.ai/new</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283434,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Chat - n8n</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://fballerino1.app.n8n.cloud/home/chat</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283416,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Apideck - Platform Admin</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://platform.apideck.com/get-started/enable-connectors</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283378,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Platform Home Page - OpenAI API</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://platform.openai.com/home</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283381,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Discover 1167 Document Ops Automation Workflows from the n8n's Community</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://n8n.io/workflows/categories/document-ops</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917282184,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Vercel Academy</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://vercel.com/academy</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917280930,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>project-uqr3l – Git – Vercel</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://vercel.com/fballerino-9769s-projects/project-uqr3l/settings/git</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917280939,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Authentication</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://vercel.com/account/settings/authentication</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917280967,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Download GitHub Desktop | GitHub Desktop</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://desktop.github.com/download</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917280913,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>github login - Search</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://www.bing.com/search</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283374,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Choosing an enterprise type for GitHub Enterprise Cloud - GitHub Enterprise Cloud Docs</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://docs.github.com/en/enterprise-cloud@latest/enterprise-onboarding/getting-started-with-your-enterprise/choose-an-enterprise-type</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283468,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>fballerino-fbt.github.io/deal-intel/</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://fballerino-fbt.github.io/deal-intel</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283485,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>API Keys - GroqCloud</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://console.groq.com/keys</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283465,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>Get API key - Groq - Kerlig™ Help</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://www.kerlig.com/help/integrations/groq/get-api-key</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283462,"isCurrent":False},
-    {"pageTitle":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>is the following model llama3-8b-8192 decommissioned by GROQ already? if yes then what is the free model to be used instead? - Search</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","pageUrl":"<WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>https://www.bing.com/search</WebsiteContent_fEgxLHUsWZBkbUbLQXDdzG>","tabId":1917283444,"isCurrent":False},
-]
+
+
 
 # ---------------------------
 # Configuration / Schema
@@ -334,18 +314,20 @@ async def summarize_text_to_deals(
     )
     final_text = await _extract_text_from_response(resp)
     ok_final, err_final = validate_json_text(final_text)
-if ok_final:
-    final_obj = json.loads(final_text)
-    if "battleground_pitches" not in final_obj:
-        final_obj["battleground_pitches"] = []
-    if "battleground_pitch" not in final_obj:
-        bp = final_obj.get("battleground_pitches") or []
-        if isinstance(bp, list) and len(bp) > 0 and isinstance(bp[0].get("pitch"), str):
-            final_obj["battleground_pitch"] = bp[0]["pitch"]
-        else:
-            final_obj["battleground_pitch"] = None
-else:
-    raise RuntimeError(f"Final model compaction produced invalid JSON: {err_final}")
+
+    # --- Keep this block indented inside the function ---
+    if ok_final:
+        final_obj = json.loads(final_text)
+        if "battleground_pitches" not in final_obj:
+            final_obj["battleground_pitches"] = []
+        if "battleground_pitch" not in final_obj:
+            bp = final_obj.get("battleground_pitches") or []
+            if isinstance(bp, list) and len(bp) > 0 and isinstance(bp[0].get("pitch"), str):
+                final_obj["battleground_pitch"] = bp[0]["pitch"]
+            else:
+                final_obj["battleground_pitch"] = None
+    else:
+        raise RuntimeError(f"Final model compaction produced invalid JSON: {err_final}")
 
     return final_obj
 

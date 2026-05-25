@@ -474,6 +474,17 @@ def build_frontend_dashboard(json_input: Any, config: Optional[Dict[str, Any]] =
 </html>"""
     return html
 
+# When run as a script, generate the dashboard HTML into ./public/index.html
+if __name__ == "__main__":
+    # Use environment SAMPLE_TEXT to override the sample input if desired
+    sample_text = os.environ.get("SAMPLE_TEXT", "Sample promotional text")
+    try:
+        # _example_run_sync writes public/index.html
+        _example_run_sync(groq_client, MODEL_ID, sample_text, output_html_path="public/index.html")
+        print("Wrote dashboard to public/index.html")
+    except Exception as e:
+        print("ERROR: failed to generate public/index.html:", e)
+        raise
 
 # ---------------------------
 # Example quick-run helper (not executed on import)

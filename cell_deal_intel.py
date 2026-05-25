@@ -2,7 +2,7 @@ import os
 import json
 import asyncio
 from datetime import datetime
-from openai import OpenAI
+from groq import Groq
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 
 # --- ADD THIS TO CHUNK DUE GROQ ---
@@ -12,7 +12,7 @@ def chunk_text(text, max_chars=8000):
 # --- ADD THE PER-CHUNK SUMMARIZATION FUNCTION ---
 def summarize_chunk(client, prompt, chunk):
     response = client.chat.completions.create(
-        model="llama3-8b",
+        model="llama3-8b-8192",
         messages=[
             {"role": "system", "content": prompt},
             {"role": "user", "content": chunk}
@@ -32,7 +32,7 @@ def summarize_all_chunks(client, prompt, raw_text_stream):
     combined_text = "\n".join(partial_summaries)
 
     final_response = client.chat.completions.create(
-        model="llama3-8b",
+        model="llama3-8b-8192",
         messages=[
             {"role": "system", "content": "Combine and refine these summaries into a single structured JSON output."},
             {"role": "user", "content": combined_text}
@@ -48,6 +48,8 @@ with open("config.json", "r") as f:
     CONFIG = json.load(f)
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+
+client = Groq(api_key=GROQ_API_KEY)
 
 async def scrape_targets():
     combined_context = ""

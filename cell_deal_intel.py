@@ -12,7 +12,7 @@ def chunk_text(text, max_chars=8000):
 # --- ADD THE PER-CHUNK SUMMARIZATION FUNCTION ---
 def summarize_chunk(client, prompt, chunk):
     response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": prompt},
             {"role": "user", "content": chunk}
@@ -32,7 +32,7 @@ def summarize_all_chunks(client, prompt, raw_text_stream):
     combined_text = "\n".join(partial_summaries)
 
     final_response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": "Combine and refine these summaries into a single structured JSON output."},
             {"role": "user", "content": combined_text}

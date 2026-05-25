@@ -334,18 +334,18 @@ async def summarize_text_to_deals(
     )
     final_text = await _extract_text_from_response(resp)
     ok_final, err_final = validate_json_text(final_text)
-    if ok_final:
-        final_obj = json.loads(final_text)
-        if "battleground_pitches" not in final_obj:
-            final_obj["battleground_pitches"] = []
-        if "battleground_pitch" not in final_obj:
-            bp = final_obj.get("battleground_pitches") or []
-            if isinstance(bp, list) and len(bp) > 0 and isinstance(bp[0].get("pitch"), str):
-                final_obj["battleground_pitch"] = bp[0]["pitch"]
-            else:
-                final_obj["battleground_pitch"] = None
-    else:
-        raise RuntimeError(f"Final model compaction produced invalid JSON: {err_final}")
+if ok_final:
+    final_obj = json.loads(final_text)
+    if "battleground_pitches" not in final_obj:
+        final_obj["battleground_pitches"] = []
+    if "battleground_pitch" not in final_obj:
+        bp = final_obj.get("battleground_pitches") or []
+        if isinstance(bp, list) and len(bp) > 0 and isinstance(bp[0].get("pitch"), str):
+            final_obj["battleground_pitch"] = bp[0]["pitch"]
+        else:
+            final_obj["battleground_pitch"] = None
+else:
+    raise RuntimeError(f"Final model compaction produced invalid JSON: {err_final}")
 
     return final_obj
 

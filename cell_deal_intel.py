@@ -42,7 +42,7 @@ async def scrape_targets():
 
 def query_ai_layer(raw_text_stream):
     # Free Tier Cloud Processing - Uses 0 bytes of local computer storage
-    client = OpenAI(base_url="https://groq.com", api_key=GROQ_API_KEY)
+    client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=GROQ_API_KEY)
     
     prompt = """
     You are an expert telecom competitor analyst. Analyze this web text data and image context records.

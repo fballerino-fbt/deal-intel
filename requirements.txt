@@ -1,3 +1,7 @@
-os
-json
-asyncio
+requests
+pandas
+beautifulsoup4
+lxml
+python-dotenv
+openpyxl
+numpy

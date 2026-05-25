@@ -1,0 +1,46 @@
+name: Deploy Wireless Competitive Intelligence Dashboard
+
+on:
+  schedule:
+    - cron: '0 7 * * *'  # Triggers completely free every morning at 7:00 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run_pipeline_and_host:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Set Up Python Cloud Workspace Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install Ingestion Frameworks
+      run: |
+        pip install crawl4ai openai
+        python -m crawl4ai.setup
+
+    - name: Step 1 - Execute Ingestion and Dashboard Generation
+      env:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      run: python cell_deal_intel.py
+
+    - name: Step 2 - Execute Isolated Alert Module (Fail-Safe)
+      env:
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        MANAGER_EMAIL: ${{ secrets.MANAGER_EMAIL }}
+      continue-on-error: true # Guarantees that communication errors never halt code deployments
+      run: python send_alert.py
+
+    - name: Step 3 - Host Build Output via GitHub Pages Cloud
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public

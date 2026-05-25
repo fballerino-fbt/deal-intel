@@ -3,7 +3,7 @@ import json
 import asyncio
 from datetime import datetime
 from openai import OpenAI
-from crawl4ai import AsyncWebCrawler, AsyncWebCrawlConfig
+from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 
 # Load configurations
 with open("config.json", "r") as f:
@@ -13,7 +13,7 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
 async def scrape_targets():
     combined_context = ""
-    crawl_config = AsyncWebCrawlConfig(
+    crawl_config = CrawlerRunConfig(
         word_count_threshold=5,
         remove_overlay_elements=True,
         wait_for_images=True  # Dynamic loading protection for image promotions

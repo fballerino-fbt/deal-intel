@@ -1,5 +1,5 @@
 # deal-intel/cell_deal_intel.py
-# Final single-file module — ready to paste
+# Clean single-file module — ready to paste
 # - Model ID set to "llama-3.1-8b-instant"
 # - Active imports for Groq and crawl4ai
 # - Secure client instantiation from environment variables (no secrets in source)
@@ -17,74 +17,6 @@ from typing import Any, Dict, List, Optional, Tuple
 # Required active imports
 from groq import Groq
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
-
-# ---------------------------
-# User's Edge browser tabs metadata (kept for context)
-# The tab with isCurrent True is the user's active tab.
-# This is safe Python data (no JS/JSON booleans).
-# ---------------------------
-edge_all_open_tabs = [
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Editing deal-intel/cell_deal_intel.py at main · fballerino-fbt/deal-intel</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://github.com/fballerino-fbt/deal-intel/edit/main/cell_deal_intel.py</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283405, "isCurrent": True},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>CPALMS | Search Standards</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.cpalms.org/standards/FLStandardSearch.aspx</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283419, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>FETA - NotebookLM</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://notebooklm.google.com/notebook/12692cfa-323a-4522-b1ee-c01813e568f6</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283425, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Dashboard | Claude Platform</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://platform.claude.com/dashboard</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283410, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Home \\ Anthropic</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.anthropic.com</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283413, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Claude</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://claude.ai/new</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283434, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Chat - n8n</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://fballerino1.app.n8n.cloud/home/chat</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283416, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Apideck - Platform Admin</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://platform.apideck.com/get-started/enable-connectors</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283378, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Platform Home Page - OpenAI API</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://platform.openai.com/home</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283381, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Discover 1167 Document Ops Automation Workflows from the n8n's Community</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://n8n.io/workflows/categories/document-ops</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917282184, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Vercel Academy</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://vercel.com/academy</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917280930, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>project-uqr3l – Git – Vercel</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://vercel.com/fballerino-9769s-projects/project-uqr3l/settings/git</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917280939, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Authentication</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://vercel.com/account/settings/authentication</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917280967, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Download GitHub Desktop | GitHub Desktop</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://desktop.github.com/download</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917280913, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>github login - Search</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.bing.com/search</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283374, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Choosing an enterprise type for GitHub Enterprise Cloud - GitHub Enterprise Cloud Docs</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://docs.github.com/en/enterprise-cloud@latest/enterprise-onboarding/getting-started-with-your-enterprise/choose-an-enterprise-type</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283468, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>fballerino-fbt.github.io/deal-intel/</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://fballerino-fbt.github.io/deal-intel</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283485, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>API Keys - GroqCloud</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://console.groq.com/keys</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283465, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Get API key - Groq - Kerlig™ Help</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.kerlig.com/help/integrations/groq/get-api-key</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283462, "isCurrent": False},
-    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>is the following model llama3-8b-8192 decommissioned by GROQ already? if yes then what is the free model to be used instead? - Search</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.bing.com/search</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
-     "tabId":1917283444, "isCurrent": False},
-]
 
 # ---------------------------
 # Instantiate clients from environment (secure, no secrets in source)

@@ -30,29 +30,47 @@ def summarize_all_chunks(client, prompt, raw_text_stream):
     # Combine partial summaries
     combined_text = "\n".join(partial_summaries)
 
-    # Stage 2 — chunk the combined summary to avoid 413 errors
-    final_chunks = chunk_text(combined_text, max_chars=4000)
+    # Stage 2 — refine in smaller chunks
+    refined_chunks = chunk_text(combined_text, max_chars=3000)
     refined_summaries = []
 
-    for fc in final_chunks:
+    for rc in refined_chunks:
         refined = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
-                {"role": "system", "content": "Refine this partial summary into structured JSON."},
-                {"role": "user", "content": fc}
+                {"role": "system", "content": "Refine this partial summary into structured JSON fragments."},
+                {"role": "user", "content": rc}
             ],
             response_format={"type": "json_object"}
         )
         refined_summaries.append(refined.choices[0].message.content)
 
-    # Stage 3 — final merge (small enough now)
-    final_merge = "\n".join(refined_summaries)
+    # Stage 3 — recursive merge until small enough
+    merged = "\n".join(refined_summaries)
 
+    while len(merged) > 3000:
+        merge_chunks = chunk_text(merged, max_chars=3000)
+        new_merge_parts = []
+
+        for mc in merge_chunks:
+            merge_resp = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[
+                    {"role": "system", "content": "Merge these JSON fragments into a smaller JSON fragment."},
+                    {"role": "user", "content": mc}
+                ],
+                response_format={"type": "json_object"}
+            )
+            new_merge_parts.append(merge_resp.choices[0].message.content)
+
+        merged = "\n".join(new_merge_parts)
+
+    # Final pass — now small enough
     final_response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[
-            {"role": "system", "content": "Merge these JSON fragments into one clean JSON object."},
-            {"role": "user", "content": final_merge}
+            {"role": "system", "content": "Merge these JSON fragments into one final clean JSON object."},
+            {"role": "user", "content": merged}
         ],
         response_format={"type": "json_object"}
     )

@@ -17,6 +17,30 @@ from typing import Any, Dict, List, Optional, Tuple
 from groq import Groq
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 
+# Create Groq client from environment variable GROQ_API_KEY
+# If you already create a Groq client elsewhere, you can ignore this block and pass your client into functions.
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+if not GROQ_API_KEY:
+    raise RuntimeError("Missing GROQ_API_KEY environment variable. Set it before running the app.")
+# instantiate Groq client (keeps credentials out of source)
+groq_client: Groq = Groq(api_key=GROQ_API_KEY)
+
+# Optional: create AsyncWebCrawler if you use crawl4ai in your pipeline.
+# Provide CRAWL4AI_API_KEY in environment if you want to enable crawling.
+CRAWL4AI_API_KEY = os.getenv("CRAWL4AI_API_KEY")
+crawler: Optional[AsyncWebCrawler] = None
+if CRAWL4AI_API_KEY:
+    # Example config; adapt as needed in your pipeline
+    crawler = AsyncWebCrawler(api_key=CRAWL4AI_API_KEY)
+# If you don't want to enable crawling, leave CRAWL4AI_API_KEY unset and crawler will remain None.
+
+# Default model id (already present in file)
+MODEL_ID = "llama-3.1-8b-instant"
+
+# Now you can call: asyncio.run(query_ai_layer(groq_client, MODEL_ID, raw_text))
+# or pass groq_client into summarize_text_to_deals(...) directly.
+
+
 # ---------------------------
 # User's Edge browser tabs metadata (kept for context)
 # ---------------------------

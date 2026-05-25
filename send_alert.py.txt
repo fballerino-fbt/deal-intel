@@ -1,0 +1,58 @@
+import os
+import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+with open("config.json", "r") as f:
+    CONFIG = json.load(f)
+
+if not CONFIG["settings"]["enable_email_dispatch"]:
+    print("[SYSTEM]: Outbound communications disabled in configuration file.")
+    exit(0)
+
+PAYLOAD_PATH = "public/latest_payload.json"
+if not os.path.exists(PAYLOAD_PATH):
+    print("[ERROR]: Active data payload cache records missing. Aborting email process.")
+    exit(1)
+
+with open(PAYLOAD_PATH, "r") as f:
+    intel_data = json.load(f)
+
+GMAIL_SENDER = os.environ.get("SENDER_EMAIL")
+GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
+MANAGER_EMAIL = os.environ.get("MANAGER_EMAIL")
+
+pitch = intel_data.get("battleground_pitch")
+access_url = CONFIG["settings"]["dashboard_url"]
+pin = CONFIG["settings"]["access_pin"]
+
+msg = MIMEMultipart('alternative')
+msg['Subject'] = "🚨 Daily Competitor Intel Brief & Action Pitch"
+msg['From'] = GMAIL_SENDER
+msg['To'] = MANAGER_EMAIL
+
+html_template = f"""
+<html>
+  <body style="font-family: Arial, sans-serif; background-color: #020617; color: #f8fafc; padding: 20px;">
+    <div style="background-color: #0f172a; padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; border: 1px solid #1e293b;">
+      <h2 style="color: #22d3ee; margin-bottom: 5px;">Retail 
+Competitive Update</h2>
+      <div style="background-color: #064e3b; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0; border-radius: 4px;">
+        <span style="color: #d1fae5; font-style: italic;">"{pitch}"</span>
+      </div>
+      <p style="text-align: center;"><a href="{access_url}" style="background-color: #0891b2; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">⚡ Access Secure Dashboard</a></p>
+      <p style="color: #475569; font-size: 11px; text-align: center;">Secure Gateway PIN: <strong>{pin}</strong></p>
+    </div>
+  </body>
+</html>"""
+
+msg.attach(MIMEText(html_template, 'html'))
+
+try:
+    with smtplib.SMTP_SSL('://gmail.com', 465) as server:
+        server.login(GMAIL_SENDER, GMAIL_APP_PASSWORD)
+        server.sendmail(GMAIL_SENDER, MANAGER_EMAIL, msg.as_string())
+    print("[SUCCESS]: Report successfully delivered to store management.")
+except Exception as email_err:
+    print(f"[FAIL-SAFE EXCEPTION]: Notification failed, but website data remains protected: {email_err}")

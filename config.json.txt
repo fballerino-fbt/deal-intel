@@ -1,0 +1,19 @@
+{
+  "settings": {
+    "access_pin": "Wireless2026",
+    "enable_email_dispatch": true,
+    "dashboard_url": "https://YOUR_GITHUB_USERNAME.github.io/deal-intel/"
+  },
+  "targets": {
+    "Metro by T-Mobile": [
+      "https://metrobyt-mobile.com",
+      "https://metrobyt-mobile.com/cell-phone-plans"
+    ],
+    "Total Wireless": [
+      "https://totalwireless.com"
+    ],
+    "Cricket Wireless": [
+      "https://cricketwireless.com"
+    ]
+  }
+}

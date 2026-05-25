@@ -94,7 +94,7 @@ def query_ai_layer(raw_text_stream):
     Return ONLY valid JSON. Avoid conversational introductions or extra code wrappers.
     """
     
-   return summarize_all_chunks(client, prompt, raw_text_stream)
+    return summarize_all_chunks(client, prompt, raw_text_stream)
 
 
 def archive_previous_state():

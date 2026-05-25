@@ -476,15 +476,31 @@ def build_frontend_dashboard(json_input: Any, config: Optional[Dict[str, Any]] =
 
 # When run as a script, generate the dashboard HTML into ./public/index.html
 if __name__ == "__main__":
+    import asyncio
+    from groq import Groq
+
     # Use environment SAMPLE_TEXT to override the sample input if desired
     sample_text = os.environ.get("SAMPLE_TEXT", "Sample promotional text")
+
+    # Instantiate client from env; this mirrors how the module expects to be used
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        print("ERROR: GROQ_API_KEY not set in environment")
+        raise SystemExit(1)
+    client = Groq(api_key=api_key)
+
     try:
-        # _example_run_sync writes public/index.html
-        _example_run_sync(groq_client, MODEL_ID, sample_text, output_html_path="public/index.html")
+        # Run the async pipeline to get the final object, then build HTML and write it
+        final_obj = asyncio.run(query_ai_layer(client, MODEL_ID, sample_text))
+        html = build_frontend_dashboard(final_obj)
+        os.makedirs("public", exist_ok=True)
+        with open("public/index.html", "w", encoding="utf-8") as f:
+            f.write(html)
         print("Wrote dashboard to public/index.html")
     except Exception as e:
         print("ERROR: failed to generate public/index.html:", e)
         raise
+
 
 # ---------------------------
 # Example quick-run helper (not executed on import)

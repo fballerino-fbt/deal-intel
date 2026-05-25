@@ -38,7 +38,7 @@ async def scrape_targets():
                                     combined_context += f"- Promotion Visual Context: {alt_text}\n"
                 except Exception as e:
                     print(f"[BYPASS]: Target endpoint unreachable {url}: {e}")
-      return combined_context
+    return combined_context
 def query_ai_layer(raw_text_stream):
     # Free Tier Cloud Processing - Uses 0 bytes of local computer storage
     client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=GROQ_API_KEY)

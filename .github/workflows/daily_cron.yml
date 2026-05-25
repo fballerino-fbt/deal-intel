@@ -25,9 +25,9 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-   - name: Install Playwright Browsers
+    - name: Install Playwright Browsers
       run: |
-          playwright install chromium
+        python -m playwright install chromium
 
     - name: Step 1 - Execute Ingestion and Dashboard Generation
       env:

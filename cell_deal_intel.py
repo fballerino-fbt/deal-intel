@@ -5,6 +5,44 @@ from datetime import datetime
 from openai import OpenAI
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 
+# --- ADD THIS TO CHUNK DUE GROQ ---
+def chunk_text(text, max_chars=8000):
+    return [text[i:i+max_chars] for i in range(0, len(text), max_chars)]
+
+# --- ADD THE PER-CHUNK SUMMARIZATION FUNCTION ---
+def summarize_chunk(client, prompt, chunk):
+    response = client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": chunk}
+        ],
+        response_format={"type": "json_object"}
+    )
+    return response.choices[0].message.content
+
+# --- ADD THIS TO summariza all chucnks ---    
+def summarize_all_chunks(client, prompt, raw_text_stream):
+    chunks = chunk_text(raw_text_stream)
+
+    partial_summaries = []
+    for chunk in chunks:
+        partial_summaries.append(summarize_chunk(client, prompt, chunk))
+
+    combined_text = "\n".join(partial_summaries)
+
+    final_response = client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {"role": "system", "content": "Combine and refine these summaries into a single structured JSON output."},
+            {"role": "user", "content": combined_text}
+        ],
+        response_format={"type": "json_object"}
+    )
+
+    return final_response.choices[0].message.content
+
+    
 # Load configurations
 with open("config.json", "r") as f:
     CONFIG = json.load(f)
@@ -55,12 +93,9 @@ def query_ai_layer(raw_text_stream):
     }
     Return ONLY valid JSON. Avoid conversational introductions or extra code wrappers.
     """
-    response = client.chat.completions.create(
-       model="llama3-8b-8192",
-        messages=[{"role": "system", "content": prompt}, {"role": "user", "content": raw_text_stream}],
-        response_format={"type": "json_object"}
-    )
-    return response.choices[0].message.content
+    
+   return summarize_all_chunks(client, prompt, raw_text_stream)
+
 
 def archive_previous_state():
     os.makedirs("public", exist_ok=True)

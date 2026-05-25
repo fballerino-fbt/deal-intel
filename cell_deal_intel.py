@@ -57,7 +57,7 @@ def query_ai_layer(raw_text_stream):
     Return ONLY valid JSON. Avoid conversational introductions or extra code wrappers.
     """
     response = client.chat.completions.create(
-        model="llama-3.1-70b-versatile",
+        model="mixtral-8x7b-32768",
         messages=[{"role": "system", "content": prompt}, {"role": "user", "content": raw_text_stream}],
         response_format={"type": "json_object"}
     )

@@ -38,8 +38,7 @@ async def scrape_targets():
                                     combined_context += f"- Promotion Visual Context: {alt_text}\n"
                 except Exception as e:
                     print(f"[BYPASS]: Target endpoint unreachable {url}: {e}")
-    return combined_context
-
+      return combined_context
 def query_ai_layer(raw_text_stream):
     # Free Tier Cloud Processing - Uses 0 bytes of local computer storage
     client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=GROQ_API_KEY)
@@ -57,11 +56,11 @@ def query_ai_layer(raw_text_stream):
     Return ONLY valid JSON. Avoid conversational introductions or extra code wrappers.
     """
     response = client.chat.completions.create(
-        model="mixtral-8x7b-32768",
+        model="gemma-7b-it",
         messages=[{"role": "system", "content": prompt}, {"role": "user", "content": raw_text_stream}],
         response_format={"type": "json_object"}
     )
-    return response.choices.message.content
+    return response.choices[0].message.content
 
 def archive_previous_state():
     os.makedirs("public", exist_ok=True)
@@ -92,9 +91,8 @@ def build_frontend_dashboard(json_string):
             <div class="text-4xl mb-3">🔒</div>
             <h2 class="text-xl font-bold text-cyan-400 mb-1">Secure Intel Access</h2>
             <p class="text-slate-400 text-xs mb-6 font-light">Verification Required for Client Portals</p>
-            <input type="password" id="pinInput" placeholder="Enter Secure Pin" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-center tracking-widest font-mono text-white mb-4 focus:outline-none focus:border-cyan-500">
-            <button onclick="verifyAccess()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold p-3 rounded-lg transform active:scale-95 transition-all">Authenticate Terminal</button>
-            <p id="errorMsg" class="text-red-400 text-xs mt-3 hidden">Access Refused. Invalid Authentication Code.</p>
+           <input type="password" id="pinInput" placeholder="Enter Secure Pin" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-center tracking-widest font-mono text-white m[...]
+            <button onclick="verifyAccess()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold p-3 rounded-lg transform active:scale-95 transition-all">Authenticate Terminal</bu[...]            <p id="errorMsg" class="text-red-400 text-xs mt-3 hidden">Access Refused. Invalid Authentication Code.</p>
         </div>
     </div>
     <!-- MAIN INTERACTIVE CONTAINER -->
@@ -104,14 +102,13 @@ def build_frontend_dashboard(json_string):
                 <h1 class="text-3xl font-black tracking-tight bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">📡 TELECOM BATTLEGROUND</h1>
                 <p class="text-slate-400 text-xs font-mono mt-1">DATA FLOW FRESHNESS: <span class="text-cyan-400 font-bold">{timestamp}</span></p>
             </div>
-            <button onclick="speakBriefing()" class="bg-slate-900 border border-slate-700 text-slate-300 font-medium px-4 py-2 rounded-xl text-xs hover:border-cyan-500/50 flex items-center gap-2">🔊 Play Audio Briefing</button>
-        </header>
+           <button onclick="speakBriefing()" class="bg-slate-900 border border-slate-700 text-slate-300 font-medium px-4 py-2 rounded-xl text-xs hover:border-cyan-500/50 flex items-center gap-2"[...]
         <!-- AI TACTICAL COUNTER-PITCH CARD -->
         <div class="bg-slate-900 border border-emerald-500/20 rounded-2xl p-6 mb-6 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all">
             <p id="pitchText" class="text-slate-200 text-base font-light italic">"{pitch}"</p>
         </div>
         <!-- INSTANT INTERACTIVE FILTER KEYWORD WRAPPER -->
-        <input type="text" id="dealSearch" onkeyup="filterTable()" placeholder="Search devices or carriers..." class="w-full bg-slate-900 border border-slate-800 text-white rounded-xl p-4 focus:outline-none focus:border-cyan-500 text-sm mb-6">
+         <input type="text" id="dealSearch" onkeyup="filterTable()" placeholder="Search devices or carriers..." class="w-full bg-slate-900 border border-slate-800 text-white rounded-xl p-4 focus:o[...]
         <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl">
             <table class="w-full text-left border-collapse">
                 <thead>

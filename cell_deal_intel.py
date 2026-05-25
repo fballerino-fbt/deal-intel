@@ -1,7 +1,8 @@
 # deal-intel/cell_deal_intel.py
-# Final single-file replacement — ready to paste
+# Final single-file module — ready to paste
 # - Model ID set to "llama-3.1-8b-instant"
-# - Includes groq and crawl4ai imports (not commented)
+# - Active imports for Groq and crawl4ai
+# - Secure client instantiation from environment variables (no secrets in source)
 # - Deterministic JSON-first per-chunk summarization, repair, merging
 # - Backwards-compatible wrappers and HTML builder
 
@@ -13,39 +14,91 @@ import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-# Required imports (present and active)
+# Required active imports
 from groq import Groq
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 
-# Create Groq client from environment variable GROQ_API_KEY
-# If you already create a Groq client elsewhere, you can ignore this block and pass your client into functions.
+# ---------------------------
+# User's Edge browser tabs metadata (kept for context)
+# The tab with isCurrent True is the user's active tab.
+# This is safe Python data (no JS/JSON booleans).
+# ---------------------------
+edge_all_open_tabs = [
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Editing deal-intel/cell_deal_intel.py at main · fballerino-fbt/deal-intel</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://github.com/fballerino-fbt/deal-intel/edit/main/cell_deal_intel.py</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283405, "isCurrent": True},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>CPALMS | Search Standards</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.cpalms.org/standards/FLStandardSearch.aspx</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283419, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>FETA - NotebookLM</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://notebooklm.google.com/notebook/12692cfa-323a-4522-b1ee-c01813e568f6</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283425, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Dashboard | Claude Platform</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://platform.claude.com/dashboard</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283410, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Home \\ Anthropic</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.anthropic.com</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283413, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Claude</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://claude.ai/new</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283434, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Chat - n8n</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://fballerino1.app.n8n.cloud/home/chat</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283416, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Apideck - Platform Admin</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://platform.apideck.com/get-started/enable-connectors</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283378, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Platform Home Page - OpenAI API</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://platform.openai.com/home</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283381, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Discover 1167 Document Ops Automation Workflows from the n8n's Community</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://n8n.io/workflows/categories/document-ops</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917282184, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Vercel Academy</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://vercel.com/academy</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917280930, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>project-uqr3l – Git – Vercel</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://vercel.com/fballerino-9769s-projects/project-uqr3l/settings/git</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917280939, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Authentication</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://vercel.com/account/settings/authentication</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917280967, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Download GitHub Desktop | GitHub Desktop</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://desktop.github.com/download</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917280913, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>github login - Search</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.bing.com/search</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283374, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Choosing an enterprise type for GitHub Enterprise Cloud - GitHub Enterprise Cloud Docs</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://docs.github.com/en/enterprise-cloud@latest/enterprise-onboarding/getting-started-with-your-enterprise/choose-an-enterprise-type</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283468, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>fballerino-fbt.github.io/deal-intel/</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://fballerino-fbt.github.io/deal-intel</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283485, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>API Keys - GroqCloud</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://console.groq.com/keys</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283465, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>Get API key - Groq - Kerlig™ Help</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.kerlig.com/help/integrations/groq/get-api-key</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283462, "isCurrent": False},
+    {"pageTitle":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>is the following model llama3-8b-8192 decommissioned by GROQ already? if yes then what is the free model to be used instead? - Search</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "pageUrl":"<WebsiteContent_vJ6oCizP3UayCdddKGh9R>https://www.bing.com/search</WebsiteContent_vJ6oCizP3UayCdddKGh9R>",
+     "tabId":1917283444, "isCurrent": False},
+]
+
+# ---------------------------
+# Instantiate clients from environment (secure, no secrets in source)
+# ---------------------------
+
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if not GROQ_API_KEY:
     raise RuntimeError("Missing GROQ_API_KEY environment variable. Set it before running the app.")
-# instantiate Groq client (keeps credentials out of source)
 groq_client: Groq = Groq(api_key=GROQ_API_KEY)
 
-# Optional: create AsyncWebCrawler if you use crawl4ai in your pipeline.
-# Provide CRAWL4AI_API_KEY in environment if you want to enable crawling.
 CRAWL4AI_API_KEY = os.getenv("CRAWL4AI_API_KEY")
 crawler: Optional[AsyncWebCrawler] = None
 if CRAWL4AI_API_KEY:
-    # Example config; adapt as needed in your pipeline
     crawler = AsyncWebCrawler(api_key=CRAWL4AI_API_KEY)
-# If you don't want to enable crawling, leave CRAWL4AI_API_KEY unset and crawler will remain None.
-
-# Default model id (already present in file)
-MODEL_ID = "llama-3.1-8b-instant"
-
-# Now you can call: asyncio.run(query_ai_layer(groq_client, MODEL_ID, raw_text))
-# or pass groq_client into summarize_text_to_deals(...) directly.
-
-
-# ---------------------------
-# User's Edge browser tabs metadata (kept for context)
-# ---------------------------
-
-
 
 # ---------------------------
 # Configuration / Schema
@@ -315,7 +368,6 @@ async def summarize_text_to_deals(
     final_text = await _extract_text_from_response(resp)
     ok_final, err_final = validate_json_text(final_text)
 
-    # --- Keep this block indented inside the function ---
     if ok_final:
         final_obj = json.loads(final_text)
         if "battleground_pitches" not in final_obj:
@@ -388,10 +440,119 @@ def build_frontend_dashboard(json_input: Any, config: Optional[Dict[str, Any]] =
     else:
         intel = {"extracted_deals": [], "battleground_pitches": [], "battleground_pitch": None}
 
+    # Determine pitch text (backwards-compatible)
     pitch = None
     if isinstance(intel, dict):
         if "battleground_pitch" in intel and isinstance(intel["battleground_pitch"], str):
             pitch = intel["battleground_pitch"]
         else:
             bp = intel.get("battleground_pitches") or []
-            if isinstance(bp, list) and len(bp
+            if isinstance(bp, list) and len(bp) > 0 and isinstance(bp[0].get("pitch"), str):
+                pitch = bp[0]["pitch"]
+    if not pitch:
+        pitch = "Review current market shifts."
+
+    timestamp = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+    pin = None
+    if config and isinstance(config, dict):
+        pin = config.get("settings", {}).get("access_pin")
+    pin = pin or "0000"
+
+    # Build table rows
+    rows_html = ""
+    for deal in intel.get("extracted_deals", []) if isinstance(intel.get("extracted_deals", []), list) else []:
+        carrier = deal.get("carrier") or ""
+        device = deal.get("device") or ""
+        price = deal.get("price") or ""
+        terms = deal.get("terms") or ""
+        rows_html += f"""
+                    <tr class="hover:bg-slate-800/30 transition-colors duration-150">
+                        <td class="p-4 font-bold text-cyan-400">{carrier}</td>
+                        <td class="p-4 font-medium text-slate-100">{device}</td>
+                        <td class="p-4 font-black text-amber-400 font-mono">{price}</td>
+                        <td class="p-4 text-slate-400 font-light">{terms}</td>
+                    </tr>"""
+
+    # Full HTML template (self-contained)
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Wireless Competitive Intelligence Terminal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {{ background-color: #0f172a; color: #e6eef8; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }}
+    .container {{ max-width: 1100px; margin: 2rem auto; padding: 1rem; }}
+    .card {{ background: #0b1220; border: 1px solid rgba(6,182,212,0.08); border-radius: 12px; padding: 1rem; }}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="mb-6">
+      <h1 style="font-size:28px; font-weight:800; background:linear-gradient(90deg,#06b6d4,#10b981); -webkit-background-clip:text; color:transparent;">📡 TELECOM BATTLEGROUND</h1>
+      <p style="color:#94a3b8; font-family:monospace; font-size:12px;">DATA FLOW FRESHNESS: <span style="color:#06b6d4; font-weight:700;">{timestamp}</span></p>
+    </header>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <p id="pitchText" style="font-style:italic; color:#e6eef8;">"{pitch}"</p>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <input id="dealSearch" type="text" placeholder="Search devices or carriers..." style="width:100%; padding:12px; border-radius:10px; background:#071029; border:1px solid #0b1220; color:#e6eef8;" onkeyup="filterTable()" />
+    </div>
+
+    <div class="card" style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:rgba(15,23,42,0.6); color:#94a3b8; font-family:monospace; font-size:12px; text-transform:uppercase;">
+            <th style="padding:12px; text-align:left;">Carrier</th>
+            <th style="padding:12px; text-align:left;">Device</th>
+            <th style="padding:12px; text-align:left;">Cost</th>
+            <th style="padding:12px; text-align:left;">Requirements</th>
+          </tr>
+        </thead>
+        <tbody id="dealsTable" style="font-size:14px; color:#cbd5e1;">
+{rows_html}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function filterTable() {{
+      const q = document.getElementById('dealSearch').value.toLowerCase();
+      const rows = document.querySelectorAll('#dealsTable tr');
+      rows.forEach(r => {{
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+      }});
+    }}
+    function verifyAccess() {{
+      const pin = '{pin}';
+      const input = prompt('Enter secure pin:');
+      if (input === pin) {{
+        alert('Access granted');
+      }} else {{
+        alert('Access refused');
+      }}
+    }}
+  </script>
+</body>
+</html>"""
+    return html
+
+
+# ---------------------------
+# Example quick-run helper (not executed on import)
+# ---------------------------
+
+
+def _example_run_sync(client: Any, model: str, sample_text: str, output_html_path: str = "public/index.html"):
+    archive_previous_state(public_dir="public", active_filename="index.html", backup_filename="backup_yesterday.html")
+    final_obj = asyncio.run(query_ai_layer(client, model, sample_text))
+    html = build_frontend_dashboard(final_obj)
+    os.makedirs("public", exist_ok=True)
+    with open(output_html_path, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"Wrote dashboard to {output_html_path}")
